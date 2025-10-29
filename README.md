@@ -1,272 +1,341 @@
-# Natural Language Processing (NLP) Experiments
+# Artificial Intelligence & Machine Learning Experiments
 
-This repository contains 5 fundamental NLP experiments implemented using Python and NLTK library. Each experiment demonstrates core concepts in natural language processing with practical implementations.
+This repository contains 6 fundamental AI/ML experiments implemented using Python. Each experiment demonstrates core concepts in artificial intelligence and machine learning with practical implementations.
 
 ## 📋 Requirements
 
 - **Python 3.x**
-- **NLTK Library**
+- **Required Libraries:**
   ```bash
-  pip install nltk
+  pip install scikit-learn matplotlib numpy
   ```
 
-## 🔬 Experiments Overview
+## 🧪 Experiments Overview
 
-### 🔹 Experiment 1: Text Corpus (Brown Corpus)
+### 🧪 Experiment 1: Depth First Search (DFS)
 
-**AIM:** Implement a program to use text corpus - Brown Corpus for linguistic analysis.
+**AIM:** Write a Python program to implement Depth First Search (Uninformed).
+
+**Requirements:** Python software, any text editor (VS Code / Jupyter / Google Colab).
 
 **Code:**
 ```python
-import nltk
-from nltk.corpus import brown
+def dfs(graph, start, visited=None):
+    if visited is None:
+        visited = set()
+    visited.add(start)
+    print(start, end=" ")
+    for neighbour in graph[start]:
+        if neighbour not in visited:
+            dfs(graph, neighbour, visited)
 
-# Download and use Brown Corpus
-nltk.download('brown')
-
-# Display categories
-print("Categories in Brown Corpus:\n", brown.categories())
-
-# Display sample words
-print("\nSample words from 'news' category:\n", brown.words(categories='news')[:20])
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': ['F'],
+    'F': []
+}
+dfs(graph, 'A')
 ```
 
 **Output:**
 ```
-Categories in Brown Corpus:
-['news', 'editorial', 'fiction', 'romance', 'science_fiction', ...]
-
-Sample words from 'news' category:
-['The', 'Fulton', 'County', 'Grand', 'Jury', 'said', 'Friday', ...]
+A B D E F C
 ```
+
+**Conclusion:** DFS explores as far as possible along each branch before backtracking.
 
 **Key Questions & Answers:**
 
-**Q1. Define Brown Corpus. What's the main feature of Brown Corpus?**
-- The Brown Corpus is the first structured text corpus of American English
-- It is categorized into genres like news, fiction, and science, helping in linguistic analysis
+**Q1. Define DFS and difference with BFS.**
+- DFS explores deep into a branch before exploring siblings
+- BFS explores level by level
+- DFS uses a stack (or recursion), BFS uses a queue
 
-**Q2. What's the difference between Brown Corpus and Penn Treebank Corpus?**
-
-| Feature | Brown Corpus | Penn Treebank Corpus |
-|---------|--------------|----------------------|
-| Type | General English text | Annotated for syntactic parsing |
-| Focus | Word frequency & grammar | Sentence structure (parse trees) |
-| Use | Text classification | POS tagging & parsing |
+**Q2. Explain DFS working.**
+- Start from a node → visit it → go to next unvisited neighbor → continue until no path remains → backtrack
+- Example order: A → B → D → E → F → C
 
 ---
 
-### 🔹 Experiment 2: Sentence and Word Segmentation
+### 🧪 Experiment 2: Greedy Best-First Search (Informed)
 
-**AIM:** Write a program for Sentence Segmentation and Word Segmentation using NLTK.
+**AIM:** Write Python program to implement Greedy Best-First Search.
+
+**Requirements:** Python with heapq library.
 
 **Code:**
 ```python
-import nltk
-from nltk.tokenize import sent_tokenize, word_tokenize
+import heapq
 
-# Download necessary resources
-nltk.download('punkt')
-nltk.download('punkt_tab')
+def greedy_best_first(graph, start, goal, heuristic):
+    visited = set()
+    pq = [(heuristic[start], start)]
+    while pq:
+        (h, node) = heapq.heappop(pq)
+        if node not in visited:
+            print(node, end=" ")
+            visited.add(node)
+            if node == goal:
+                break
+            for neighbor in graph[node]:
+                heapq.heappush(pq, (heuristic[neighbor], neighbor))
 
-text = "Hello! Good Morning. Today is my NLP practical and I am very tensed."
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': ['F'],
+    'F': []
+}
+heuristic = {'A': 6, 'B': 4, 'C': 3, 'D': 2, 'E': 1, 'F': 0}
 
-# Sentence Segmentation
-sentences = sent_tokenize(text)
-print("Sentence Segmentation:", sentences)
-
-# Word Segmentation
-words = word_tokenize(text)
-print("Word Segmentation:", words)
+greedy_best_first(graph, 'A', 'F', heuristic)
 ```
 
 **Output:**
 ```
-Sentence Segmentation: ['Hello!', 'Good Morning.', 'Today is my NLP practical and I am very tensed.']
-Word Segmentation: ['Hello', '!', 'Good', 'Morning', '.', 'Today', 'is', 'my', 'NLP', 'practical', 'and', 'I', 'am', 'very', 'tensed', '.']
+A C F
 ```
+
+**Conclusion:** Greedy Best-First uses heuristic values to choose the most promising node.
 
 **Key Questions & Answers:**
 
-**Q1. Split the text into word and sentence segmentation.**
-✅ Implemented in the above code.
+**Q1. Explain working principle.**
+- It selects the node that seems closest to the goal using a heuristic
+- Called Informed because it uses extra knowledge (heuristic function)
 
-**Q2. State the library used for sentence segmentation and how to install that library.**
-- **Library used:** NLTK
-- **Installation command:** `pip install nltk`
+**Q2. Why better than BFS/DFS?**
+- BFS/DFS explore blindly
+- Greedy Best-First uses heuristics to reach goal faster
 
 ---
 
-### 🔹 Experiment 3: Lemmatization and Stemming Techniques
+### 🧪 Experiment 3: Breadth First Search (BFS)
 
-**AIM:** Apply Lemmatization and Stemming Techniques using Porter Stemmer and WordNet Lemmatizer.
+**AIM:** Write Python program to implement BFS (Uninformed).
+
+**Requirements:** Python 3
 
 **Code:**
 ```python
-import nltk
-from nltk.stem import PorterStemmer, WordNetLemmatizer
+from collections import deque
 
-# Download necessary resources
-nltk.download('wordnet')
-nltk.download('omw-1.4')
+def bfs(graph, start):
+    visited = set([start])
+    queue = deque([start])
+    while queue:
+        node = queue.popleft()
+        print(node, end=" ")
+        for neighbour in graph[node]:
+            if neighbour not in visited:
+                visited.add(neighbour)
+                queue.append(neighbour)
 
-text_words = ["running", "flies", "better", "easily", "studies"]
-
-# Initialize stemmer and lemmatizer
-ps = PorterStemmer()
-lm = WordNetLemmatizer()
-
-print("Stemming:")
-for w in text_words:
-    print(w, "→", ps.stem(w))
-
-print("\nLemmatization:")
-for w in text_words:
-    print(w, "→", lm.lemmatize(w))
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': ['F'],
+    'F': []
+}
+bfs(graph, 'A')
 ```
 
 **Output:**
 ```
-Stemming:
-running → run
-flies → fli
-better → better
-easily → easili
-studies → studi
-
-Lemmatization:
-running → running
-flies → fly
-better → good
-easily → easily
-studies → study
+A B C D E F
 ```
+
+**Conclusion:** BFS explores all nodes level by level using a queue.
 
 **Key Questions & Answers:**
 
-**Q1. What is the main difference between Stemming and Lemmatization?**
+**Q1. Explain working.**
+- Start from root → explore all neighbors → then move to next level
+- Traversal order example: A, B, C, D, E, F
 
-| Feature | Stemming | Lemmatization |
-|---------|----------|---------------|
-| Output | Root form (may not be valid word) | Real dictionary word |
-| Method | Removes prefixes/suffixes | Uses linguistic rules |
-| Example | "Studies" → "studi" | "Studies" → "study" |
-
-**Q2. Name one scenario where Porter Stemmer might be preferred over Lancaster Stemmer.**
-- When we need less aggressive stemming and better readability, Porter Stemmer is preferred.
+**Q2. Applications of BFS:**
+- Shortest path in unweighted graphs
+- Web crawler page visiting
+- Finding connected components in networks
 
 ---
 
-### 🔹 Experiment 4: Text Normalization and Tokenization
+### 🧪 Experiment 4: Split Dataset into Train/Test
 
-**AIM:** Write a program for text normalization using NLTK — tokenizing text and removing special characters.
+**AIM:** Write Python program to split dataset into training and testing sets.
+
+**Requirements:** Python, scikit-learn
 
 **Code:**
 ```python
-import nltk
-from nltk.tokenize import word_tokenize
-import re
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_iris
 
-nltk.download('punkt')
+data = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(
+    data.data, data.target, test_size=0.3, random_state=42)
 
-text = "Hello!!! Welcome to NLP Practical #4 @2025."
-
-# Remove special characters
-clean_text = re.sub(r'[^A-Za-z0-9\s]', '', text)
-
-# Tokenize
-tokens = word_tokenize(clean_text)
-
-print("Original Text:", text)
-print("Cleaned Text:", clean_text)
-print("Tokens:", tokens)
+print("Training samples:", len(X_train))
+print("Testing samples:", len(X_test))
 ```
 
 **Output:**
 ```
-Original Text: Hello!!! Welcome to NLP Practical #4 @2025.
-Cleaned Text: Hello Welcome to NLP Practical 4 2025
-Tokens: ['Hello', 'Welcome', 'to', 'NLP', 'Practical', '4', '2025']
+Training samples: 105
+Testing samples: 45
 ```
+
+**Conclusion:** Splitting dataset helps test the model on unseen data for fair evaluation.
 
 **Key Questions & Answers:**
 
-**Q1. What is the purpose of removing special characters during text normalization?**
-- It makes the text cleaner and easier for NLP models to process accurately.
+**Q1. Difference between training and testing set:**
+- **Training set** → used to train the model
+- **Testing set** → used to evaluate model accuracy
 
-**Q2. What is a Bigram? Give an example.**
-- A Bigram is a pair of consecutive words.
-- **Example:** "I love NLP" → ('I', 'love'), ('love', 'NLP')
+**Q2. What if not split?**
+- The model memorizes data → gives high accuracy but poor real-world performance (overfitting)
 
 ---
 
-### 🔹 Experiment 5: POS Tagging
+### 🧪 Experiment 5: Decision Tree
 
-**AIM:** Write a program for POS (Part-of-Speech) Tagging on the given text.
+**AIM:** Create and display a Decision Tree on given dataset.
+
+**Requirements:** Python, scikit-learn, matplotlib.
 
 **Code:**
 ```python
-import nltk
-from nltk import word_tokenize, pos_tag
+from sklearn.datasets import load_iris
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+import matplotlib.pyplot as plt
 
-# Download required resources
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger_eng')
+data = load_iris()
+model = DecisionTreeClassifier()
+model.fit(data.data, data.target)
 
-text = "NLP helps computers understand human language."
-
-# Tokenize and tag
-tokens = word_tokenize(text)
-pos_tags = pos_tag(tokens)
-
-print("Tokens:", tokens)
-print("POS Tags:", pos_tags)
+plt.figure(figsize=(8,6))
+plot_tree(model, filled=True, feature_names=data.feature_names, class_names=data.target_names)
+plt.show()
 ```
 
 **Output:**
 ```
-Tokens: ['NLP', 'helps', 'computers', 'understand', 'human', 'language', '.']
-POS Tags: [('NLP', 'NNP'), ('helps', 'VBZ'), ('computers', 'NNS'), ('understand', 'VB'), ('human', 'JJ'), ('language', 'NN'), ('.', '.')]
+(A displayed Decision Tree chart showing splits.)
 ```
+
+**Conclusion:** Decision Tree classifies data by splitting into branches based on features.
 
 **Key Questions & Answers:**
 
-**Q1. What is the role of the word_tokenize() function in the POS tagging program?**
-- It splits the text into individual words for analysis.
+**Q1. Which function visualizes the tree?**
+- `plot_tree()` from sklearn
+- **Parameters:**
+  - `model`: trained model
+  - `filled=True`: colors nodes
+  - `feature_names`, `class_names`: label info
 
-**Q2. Why do we use nltk.download('averaged_perceptron_tagger') before performing POS tagging?**
-- It downloads the pretrained model used for assigning POS tags.
+**Q2. What is Decision Tree?**
+- A tree-like model for decisions
+- **Root Node:** starting feature
+- **Decision Nodes:** tests
+- **Leaf Nodes:** final output/class
+- **Example:** Weather → (Sunny → Play / Rainy → Don't Play)
 
 ---
 
-## 🎯 Conclusions
+### 🧪 Experiment 6: Simple Linear Regression
 
-1. **Text Corpus:** Successfully accessed and explored the Brown Corpus using NLTK, understanding how large annotated text datasets support NLP model training.
+**AIM:** Implement Simple Linear Regression in Python.
 
-2. **Segmentation:** Sentence and word segmentation divide text into meaningful parts, which is the first step in text preprocessing.
+**Requirements:** Python, scikit-learn.
 
-3. **Stemming vs Lemmatization:** Stemming reduces words to root forms; Lemmatization provides valid dictionary words. Lemmatization is more accurate.
+**Code:**
+```python
+from sklearn.linear_model import LinearRegression
+import numpy as np
 
-4. **Text Normalization:** Text normalization improves text consistency and readability by removing noise like symbols and punctuation.
+X = np.array([[1], [2], [3], [4], [5]])
+y = np.array([2, 4, 5, 4, 5])
 
-5. **POS Tagging:** POS tagging helps identify the grammatical structure of sentences, aiding in syntactic and semantic analysis.
+model = LinearRegression()
+model.fit(X, y)
+
+print("Slope (m):", model.coef_[0])
+print("Intercept (c):", model.intercept_)
+print("Prediction for x=6:", model.predict([[6]])[0])
+```
+
+**Output:**
+```
+Slope (m): 0.6
+Intercept (c): 2.2
+Prediction for x=6: 5.8
+```
+
+**Conclusion:** Linear regression finds a straight-line relationship between X and Y.
+
+**Key Questions & Answers:**
+
+**Q1. Difference between Simple and Multiple Linear Regression:**
+- **Simple:** 1 independent variable → e.g. y = m*x + c
+- **Multiple:** 2 or more independent variables → e.g. y = b0 + b1*x1 + b2*x2
+
+**Q2. What is Simple Linear Regression?**
+- A method to find relation between two variables
+- **Equation:** y = m*x + c
+  - y = predicted value
+  - x = input value
+  - m = slope
+  - c = intercept
+
+---
+
+## 🎯 Key Concepts Summary
+
+### Search Algorithms
+- **DFS:** Deep exploration using stack/recursion
+- **BFS:** Level-by-level exploration using queue
+- **Greedy Best-First:** Informed search using heuristics
+
+### Machine Learning
+- **Dataset Splitting:** Essential for model validation
+- **Decision Trees:** Rule-based classification
+- **Linear Regression:** Finding linear relationships in data
 
 ## 🚀 Getting Started
 
 1. Clone this repository
 2. Install required dependencies:
    ```bash
-   pip install nltk
+   pip install scikit-learn matplotlib numpy
    ```
 3. Run any experiment script
-4. The necessary NLTK data will be downloaded automatically when you run the scripts
+4. Each experiment is self-contained and ready to execute
+
+## 📊 Algorithm Comparison
+
+| Algorithm | Type | Data Structure | Time Complexity | Space Complexity |
+|-----------|------|----------------|-----------------|------------------|
+| DFS | Uninformed | Stack/Recursion | O(V + E) | O(V) |
+| BFS | Uninformed | Queue | O(V + E) | O(V) |
+| Greedy Best-First | Informed | Priority Queue | O(b^m) | O(b^m) |
+
+Where V = vertices, E = edges, b = branching factor, m = maximum depth
 
 ## 📚 Additional Resources
 
-- [NLTK Documentation](https://www.nltk.org/)
-- [Brown Corpus Information](https://www.nltk.org/book/ch02.html)
-- [POS Tagging Guide](https://www.nltk.org/book/ch05.html)
+- [Scikit-learn Documentation](https://scikit-learn.org/stable/)
+- [Graph Algorithms Guide](https://www.geeksforgeeks.org/graph-data-structure-and-algorithms/)
+- [Machine Learning Basics](https://scikit-learn.org/stable/tutorial/basic/tutorial.html)
 
 ---
 
-**Note:** Each experiment includes practical implementations with real outputs and comprehensive Q&A sections to reinforce learning concepts.
+**Note:** Each experiment includes practical implementations with real outputs and comprehensive Q&A sections to reinforce learning concepts in AI and Machine Learning.
