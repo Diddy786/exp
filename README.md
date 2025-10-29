@@ -1,16 +1,3 @@
-# Artificial Intelligence & Machine Learning Experiments
-
-This repository contains 6 fundamental AI/ML experiments implemented using Python. Each experiment demonstrates core concepts in artificial intelligence and machine learning with practical implementations.
-
-## 📋 Requirements
-
-- **Python 3.x**
-- **Required Libraries:**
-  ```bash
-  pip install scikit-learn matplotlib numpy
-  ```
-
-## 🧪 Experiments Overview
 
 ### 🧪 Experiment 1: Depth First Search (DFS)
 
