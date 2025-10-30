@@ -1,6 +1,6 @@
 
 
-#### 1. First Come First Serve (FCFS) Scheduling
+#### 4. First Come First Serve (FCFS) Scheduling
 
 **Description:** Processes are executed in the order they arrive. Simple but can cause convoy effect.
 
@@ -47,7 +47,7 @@ Average Turnaround Time = 16.00
 
 ---
 
-#### 2. Shortest Job First (SJF) Scheduling
+#### 5. Shortest Job First (SJF) Scheduling
 
 **Description:** Process with shortest burst time is executed first. Minimizes average waiting time.
 
@@ -96,7 +96,7 @@ Average Turnaround Time = 13.67
 
 ---
 
-#### 3. Priority Scheduling
+#### 6. Priority Scheduling
 
 **Description:** Process with highest priority (lowest priority number) is executed first.
 
@@ -152,7 +152,7 @@ Average Turnaround Time = 13.67
 
 ---
 
-#### 4. Round Robin Scheduling
+#### 7. Round Robin Scheduling
 
 **Description:** Each process gets a fixed time slice (quantum). Preemptive and fair scheduling.
 
@@ -215,7 +215,7 @@ Average Turnaround Time = 17.33
 
 ### 💾 Memory Management - Page Replacement Algorithms
 
-#### 5. FIFO (First In First Out) Page Replacement
+#### 10. FIFO (First In First Out) Page Replacement
 
 **Description:** Replaces the oldest page in memory when a page fault occurs.
 
@@ -260,7 +260,7 @@ Total Page Faults: 9
 
 ---
 
-#### 6. LRU (Least Recently Used) Page Replacement
+#### 11. LRU (Least Recently Used) Page Replacement
 
 **Description:** Replaces the page that has been unused for the longest time.
 
@@ -309,7 +309,7 @@ Total Page Faults: 8
 
 ### 📁 File Allocation
 
-#### 7. Sequential File Allocation
+#### 12. Sequential File Allocation
 
 **Description:** Files are allocated contiguous blocks on disk. Simple but can cause external fragmentation.
 
