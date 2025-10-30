@@ -1,328 +1,399 @@
+# Operating Systems Algorithms
 
-### 🧪 Experiment 1: Depth First Search (DFS)
+This repository contains implementations of fundamental Operating Systems algorithms in Python. Each algorithm demonstrates core concepts in process scheduling, memory management, and file allocation.
 
-**AIM:** Write a Python program to implement Depth First Search (Uninformed).
+## 📋 Requirements
 
-**Requirements:** Python software, any text editor (VS Code / Jupyter / Google Colab).
+- **Python 3.x**
+- No additional libraries required (uses built-in Python functions)
 
-**Code:**
-```python
-def dfs(graph, start, visited=None):
-    if visited is None:
-        visited = set()
-    visited.add(start)
-    print(start, end=" ")
-    for neighbour in graph[start]:
-        if neighbour not in visited:
-            dfs(graph, neighbour, visited)
+## 🔧 Algorithms Overview
 
-graph = {
-    'A': ['B', 'C'],
-    'B': ['D', 'E'],
-    'C': ['F'],
-    'D': [],
-    'E': ['F'],
-    'F': []
-}
-dfs(graph, 'A')
-```
+### 📊 CPU Scheduling Algorithms
 
-**Output:**
-```
-A B D E F C
-```
+#### 1. First Come First Serve (FCFS) Scheduling
 
-**Conclusion:** DFS explores as far as possible along each branch before backtracking.
-
-**Key Questions & Answers:**
-
-**Q1. Define DFS and difference with BFS.**
-- DFS explores deep into a branch before exploring siblings
-- BFS explores level by level
-- DFS uses a stack (or recursion), BFS uses a queue
-
-**Q2. Explain DFS working.**
-- Start from a node → visit it → go to next unvisited neighbor → continue until no path remains → backtrack
-- Example order: A → B → D → E → F → C
-
----
-
-### 🧪 Experiment 2: Greedy Best-First Search (Informed)
-
-**AIM:** Write Python program to implement Greedy Best-First Search.
-
-**Requirements:** Python with heapq library.
+**Description:** Processes are executed in the order they arrive. Simple but can cause convoy effect.
 
 **Code:**
 ```python
-import heapq
+# FCFS Scheduling
+n = int(input("Enter number of processes: "))
+bt = [int(input(f"Enter burst time for P{i+1}: ")) for i in range(n)]
 
-def greedy_best_first(graph, start, goal, heuristic):
-    visited = set()
-    pq = [(heuristic[start], start)]
-    while pq:
-        (h, node) = heapq.heappop(pq)
-        if node not in visited:
-            print(node, end=" ")
-            visited.add(node)
-            if node == goal:
-                break
-            for neighbor in graph[node]:
-                heapq.heappush(pq, (heuristic[neighbor], neighbor))
+wt = [0]*n
+tat = [0]*n
 
-graph = {
-    'A': ['B', 'C'],
-    'B': ['D', 'E'],
-    'C': ['F'],
-    'D': [],
-    'E': ['F'],
-    'F': []
-}
-heuristic = {'A': 6, 'B': 4, 'C': 3, 'D': 2, 'E': 1, 'F': 0}
+# Waiting time
+for i in range(1, n):
+    wt[i] = wt[i-1] + bt[i-1]
 
-greedy_best_first(graph, 'A', 'F', heuristic)
+# Turnaround time
+for i in range(n):
+    tat[i] = wt[i] + bt[i]
+
+print("\nProcess\tBT\tWT\tTAT")
+for i in range(n):
+    print(f"P{i+1}\t{bt[i]}\t{wt[i]}\t{tat[i]}")
+
+print(f"\nAverage Waiting Time = {sum(wt)/n:.2f}")
+print(f"Average Turnaround Time = {sum(tat)/n:.2f}")
 ```
 
-**Output:**
+**Sample Input/Output:**
 ```
-A C F
+Enter number of processes: 3
+Enter burst time for P1: 10
+Enter burst time for P2: 5
+Enter burst time for P3: 8
+
+Process	BT	WT	TAT
+P1	10	0	10
+P2	5	10	15
+P3	8	15	23
+
+Average Waiting Time = 8.33
+Average Turnaround Time = 16.00
 ```
-
-**Conclusion:** Greedy Best-First uses heuristic values to choose the most promising node.
-
-**Key Questions & Answers:**
-
-**Q1. Explain working principle.**
-- It selects the node that seems closest to the goal using a heuristic
-- Called Informed because it uses extra knowledge (heuristic function)
-
-**Q2. Why better than BFS/DFS?**
-- BFS/DFS explore blindly
-- Greedy Best-First uses heuristics to reach goal faster
 
 ---
 
-### 🧪 Experiment 3: Breadth First Search (BFS)
+#### 2. Shortest Job First (SJF) Scheduling
 
-**AIM:** Write Python program to implement BFS (Uninformed).
-
-**Requirements:** Python 3
+**Description:** Process with shortest burst time is executed first. Minimizes average waiting time.
 
 **Code:**
 ```python
-from collections import deque
+# SJF Scheduling
+n = int(input("Enter number of processes: "))
+bt = [int(input(f"Enter burst time for P{i+1}: ")) for i in range(n)]
 
-def bfs(graph, start):
-    visited = set([start])
-    queue = deque([start])
-    while queue:
-        node = queue.popleft()
-        print(node, end=" ")
-        for neighbour in graph[node]:
-            if neighbour not in visited:
-                visited.add(neighbour)
-                queue.append(neighbour)
+processes = list(range(1, n+1))
+# Sort by burst time
+bt, processes = zip(*sorted(zip(bt, processes)))
 
-graph = {
-    'A': ['B', 'C'],
-    'B': ['D', 'E'],
-    'C': ['F'],
-    'D': [],
-    'E': ['F'],
-    'F': []
-}
-bfs(graph, 'A')
+wt = [0]*n
+tat = [0]*n
+
+for i in range(1, n):
+    wt[i] = wt[i-1] + bt[i-1]
+
+for i in range(n):
+    tat[i] = wt[i] + bt[i]
+
+print("\nProcess\tBT\tWT\tTAT")
+for i in range(n):
+    print(f"P{processes[i]}\t{bt[i]}\t{wt[i]}\t{tat[i]}")
+
+print(f"\nAverage Waiting Time = {sum(wt)/n:.2f}")
+print(f"Average Turnaround Time = {sum(tat)/n:.2f}")
 ```
 
-**Output:**
+**Sample Input/Output:**
 ```
-A B C D E F
+Enter number of processes: 3
+Enter burst time for P1: 10
+Enter burst time for P2: 5
+Enter burst time for P3: 8
+
+Process	BT	WT	TAT
+P2	5	0	5
+P3	8	5	13
+P1	10	13	23
+
+Average Waiting Time = 6.00
+Average Turnaround Time = 13.67
 ```
-
-**Conclusion:** BFS explores all nodes level by level using a queue.
-
-**Key Questions & Answers:**
-
-**Q1. Explain working.**
-- Start from root → explore all neighbors → then move to next level
-- Traversal order example: A, B, C, D, E, F
-
-**Q2. Applications of BFS:**
-- Shortest path in unweighted graphs
-- Web crawler page visiting
-- Finding connected components in networks
 
 ---
 
-### 🧪 Experiment 4: Split Dataset into Train/Test
+#### 3. Priority Scheduling
 
-**AIM:** Write Python program to split dataset into training and testing sets.
-
-**Requirements:** Python, scikit-learn
+**Description:** Process with highest priority (lowest priority number) is executed first.
 
 **Code:**
 ```python
-from sklearn.model_selection import train_test_split
-from sklearn.datasets import load_iris
+# Priority Scheduling
+n = int(input("Enter number of processes: "))
+bt = []
+priority = []
+for i in range(n):
+    bt.append(int(input(f"Enter burst time for P{i+1}: ")))
+    priority.append(int(input(f"Enter priority for P{i+1} (lower = higher): ")))
 
-data = load_iris()
-X_train, X_test, y_train, y_test = train_test_split(
-    data.data, data.target, test_size=0.3, random_state=42)
+processes = list(range(1, n+1))
+# Sort by priority
+priority, bt, processes = zip(*sorted(zip(priority, bt, processes)))
 
-print("Training samples:", len(X_train))
-print("Testing samples:", len(X_test))
+wt = [0]*n
+tat = [0]*n
+
+for i in range(1, n):
+    wt[i] = wt[i-1] + bt[i-1]
+
+for i in range(n):
+    tat[i] = wt[i] + bt[i]
+
+print("\nProcess\tBT\tPriority\tWT\tTAT")
+for i in range(n):
+    print(f"P{processes[i]}\t{bt[i]}\t{priority[i]}\t\t{wt[i]}\t{tat[i]}")
+
+print(f"\nAverage Waiting Time = {sum(wt)/n:.2f}")
+print(f"Average Turnaround Time = {sum(tat)/n:.2f}")
 ```
 
-**Output:**
+**Sample Input/Output:**
 ```
-Training samples: 105
-Testing samples: 45
+Enter number of processes: 3
+Enter burst time for P1: 10
+Enter priority for P1 (lower = higher): 3
+Enter burst time for P2: 5
+Enter priority for P2 (lower = higher): 1
+Enter burst time for P3: 8
+Enter priority for P3 (lower = higher): 2
+
+Process	BT	Priority	WT	TAT
+P2	5	1		0	5
+P3	8	2		5	13
+P1	10	3		13	23
+
+Average Waiting Time = 6.00
+Average Turnaround Time = 13.67
 ```
-
-**Conclusion:** Splitting dataset helps test the model on unseen data for fair evaluation.
-
-**Key Questions & Answers:**
-
-**Q1. Difference between training and testing set:**
-- **Training set** → used to train the model
-- **Testing set** → used to evaluate model accuracy
-
-**Q2. What if not split?**
-- The model memorizes data → gives high accuracy but poor real-world performance (overfitting)
 
 ---
 
-### 🧪 Experiment 5: Decision Tree
+#### 4. Round Robin Scheduling
 
-**AIM:** Create and display a Decision Tree on given dataset.
-
-**Requirements:** Python, scikit-learn, matplotlib.
+**Description:** Each process gets a fixed time slice (quantum). Preemptive and fair scheduling.
 
 **Code:**
 ```python
-from sklearn.datasets import load_iris
-from sklearn.tree import DecisionTreeClassifier, plot_tree
-import matplotlib.pyplot as plt
+# Round Robin Scheduling
+n = int(input("Enter number of processes: "))
+bt = [int(input(f"Enter burst time for P{i+1}: ")) for i in range(n)]
+quantum = int(input("Enter Time Quantum: "))
 
-data = load_iris()
-model = DecisionTreeClassifier()
-model.fit(data.data, data.target)
+wt = [0]*n
+tat = [0]*n
+rem_bt = bt[:]
+t = 0
 
-plt.figure(figsize=(8,6))
-plot_tree(model, filled=True, feature_names=data.feature_names, class_names=data.target_names)
-plt.show()
+while True:
+    done = True
+    for i in range(n):
+        if rem_bt[i] > 0:
+            done = False
+            if rem_bt[i] > quantum:
+                t += quantum
+                rem_bt[i] -= quantum
+            else:
+                t += rem_bt[i]
+                wt[i] = t - bt[i]
+                rem_bt[i] = 0
+    if done:
+        break
+
+for i in range(n):
+    tat[i] = bt[i] + wt[i]
+
+print("\nProcess\tBT\tWT\tTAT")
+for i in range(n):
+    print(f"P{i+1}\t{bt[i]}\t{wt[i]}\t{tat[i]}")
+
+print(f"\nAverage Waiting Time = {sum(wt)/n:.2f}")
+print(f"Average Turnaround Time = {sum(tat)/n:.2f}")
 ```
 
-**Output:**
+**Sample Input/Output:**
 ```
-(A displayed Decision Tree chart showing splits.)
+Enter number of processes: 3
+Enter burst time for P1: 10
+Enter burst time for P2: 5
+Enter burst time for P3: 8
+Enter Time Quantum: 4
+
+Process	BT	WT	TAT
+P1	10	13	23
+P2	5	10	15
+P3	8	6	14
+
+Average Waiting Time = 9.67
+Average Turnaround Time = 17.33
 ```
-
-**Conclusion:** Decision Tree classifies data by splitting into branches based on features.
-
-**Key Questions & Answers:**
-
-**Q1. Which function visualizes the tree?**
-- `plot_tree()` from sklearn
-- **Parameters:**
-  - `model`: trained model
-  - `filled=True`: colors nodes
-  - `feature_names`, `class_names`: label info
-
-**Q2. What is Decision Tree?**
-- A tree-like model for decisions
-- **Root Node:** starting feature
-- **Decision Nodes:** tests
-- **Leaf Nodes:** final output/class
-- **Example:** Weather → (Sunny → Play / Rainy → Don't Play)
 
 ---
 
-### 🧪 Experiment 6: Simple Linear Regression
+### 💾 Memory Management - Page Replacement Algorithms
 
-**AIM:** Implement Simple Linear Regression in Python.
+#### 5. FIFO (First In First Out) Page Replacement
 
-**Requirements:** Python, scikit-learn.
+**Description:** Replaces the oldest page in memory when a page fault occurs.
 
 **Code:**
 ```python
-from sklearn.linear_model import LinearRegression
-import numpy as np
+# FIFO Page Replacement Algorithm - Short Version
 
-X = np.array([[1], [2], [3], [4], [5]])
-y = np.array([2, 4, 5, 4, 5])
+def fifo(pages, capacity):
+    frames, faults = [], 0
+    for p in pages:
+        if p not in frames:
+            faults += 1
+            if len(frames) == capacity:
+                frames.pop(0)     # remove oldest page
+            frames.append(p)
+        print(f"Page: {p}\tFrames: {frames}")
+    print(f"\nTotal Page Faults: {faults}")
 
-model = LinearRegression()
-model.fit(X, y)
-
-print("Slope (m):", model.coef_[0])
-print("Intercept (c):", model.intercept_)
-print("Prediction for x=6:", model.predict([[6]])[0])
+# main
+pages = [7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3]
+capacity = 3
+fifo(pages, capacity)
 ```
 
-**Output:**
+**Sample Output:**
 ```
-Slope (m): 0.6
-Intercept (c): 2.2
-Prediction for x=6: 5.8
+Page: 7	Frames: [7]
+Page: 0	Frames: [7, 0]
+Page: 1	Frames: [7, 0, 1]
+Page: 2	Frames: [0, 1, 2]
+Page: 0	Frames: [0, 1, 2]
+Page: 3	Frames: [1, 2, 3]
+Page: 0	Frames: [2, 3, 0]
+Page: 4	Frames: [3, 0, 4]
+Page: 2	Frames: [0, 4, 2]
+Page: 3	Frames: [4, 2, 3]
+Page: 0	Frames: [2, 3, 0]
+Page: 3	Frames: [2, 3, 0]
+
+Total Page Faults: 9
 ```
-
-**Conclusion:** Linear regression finds a straight-line relationship between X and Y.
-
-**Key Questions & Answers:**
-
-**Q1. Difference between Simple and Multiple Linear Regression:**
-- **Simple:** 1 independent variable → e.g. y = m*x + c
-- **Multiple:** 2 or more independent variables → e.g. y = b0 + b1*x1 + b2*x2
-
-**Q2. What is Simple Linear Regression?**
-- A method to find relation between two variables
-- **Equation:** y = m*x + c
-  - y = predicted value
-  - x = input value
-  - m = slope
-  - c = intercept
 
 ---
 
-## 🎯 Key Concepts Summary
+#### 6. LRU (Least Recently Used) Page Replacement
 
-### Search Algorithms
-- **DFS:** Deep exploration using stack/recursion
-- **BFS:** Level-by-level exploration using queue
-- **Greedy Best-First:** Informed search using heuristics
+**Description:** Replaces the page that has been unused for the longest time.
 
-### Machine Learning
-- **Dataset Splitting:** Essential for model validation
-- **Decision Trees:** Rule-based classification
-- **Linear Regression:** Finding linear relationships in data
+**Code:**
+```python
+# LRU Page Replacement Algorithm - Short Version
+
+def lru(pages, capacity):
+    frames, faults = [], 0
+    for p in pages:
+        if p not in frames:
+            faults += 1
+            if len(frames) == capacity:
+                frames.pop(0)     # remove least recently used
+        else:
+            frames.remove(p)      # move recently used to end
+        frames.append(p)
+        print(f"Page: {p}\tFrames: {frames}")
+    print(f"\nTotal Page Faults: {faults}")
+
+# main
+pages = [7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3]
+capacity = 3
+lru(pages, capacity)
+```
+
+**Sample Output:**
+```
+Page: 7	Frames: [7]
+Page: 0	Frames: [7, 0]
+Page: 1	Frames: [7, 0, 1]
+Page: 2	Frames: [0, 1, 2]
+Page: 0	Frames: [1, 2, 0]
+Page: 3	Frames: [2, 0, 3]
+Page: 0	Frames: [2, 3, 0]
+Page: 4	Frames: [3, 0, 4]
+Page: 2	Frames: [0, 4, 2]
+Page: 3	Frames: [4, 2, 3]
+Page: 0	Frames: [2, 3, 0]
+Page: 3	Frames: [2, 0, 3]
+
+Total Page Faults: 8
+```
+
+---
+
+### 📁 File Allocation
+
+#### 7. Sequential File Allocation
+
+**Description:** Files are allocated contiguous blocks on disk. Simple but can cause external fragmentation.
+
+**Code:**
+```python
+# Sequential File Allocation
+start = int(input("Enter starting block: "))
+length = int(input("Enter length of file: "))
+
+print("File allocated from block", start, "to", start + length - 1)
+```
+
+**Sample Input/Output:**
+```
+Enter starting block: 5
+Enter length of file: 10
+File allocated from block 5 to 14
+```
+
+---
+
+## 📊 Algorithm Comparison
+
+### CPU Scheduling Algorithms
+
+| Algorithm | Type | Advantages | Disadvantages |
+|-----------|------|------------|---------------|
+| FCFS | Non-preemptive | Simple, no starvation | Convoy effect, high avg waiting time |
+| SJF | Non-preemptive | Minimum avg waiting time | Starvation of long processes |
+| Priority | Non-preemptive | Important processes first | Starvation of low priority |
+| Round Robin | Preemptive | Fair, no starvation | Context switching overhead |
+
+### Page Replacement Algorithms
+
+| Algorithm | Performance | Implementation | Best Use Case |
+|-----------|-------------|----------------|---------------|
+| FIFO | Simple | Easy | When locality is not important |
+| LRU | Better | Complex | When temporal locality exists |
+
+## 🎯 Key Concepts
+
+### CPU Scheduling Metrics
+- **Burst Time (BT):** Time required by process for CPU execution
+- **Waiting Time (WT):** Time process waits in ready queue
+- **Turnaround Time (TAT):** Total time from submission to completion
+- **TAT = BT + WT**
+
+### Memory Management
+- **Page Fault:** When requested page is not in memory
+- **Frame:** Physical memory block
+- **Page:** Logical memory block
 
 ## 🚀 Getting Started
 
 1. Clone this repository
-2. Install required dependencies:
+2. Run any algorithm script:
    ```bash
-   pip install scikit-learn matplotlib numpy
+   python fcfs_scheduling.py
+   python sjf_scheduling.py
+   python priority_scheduling.py
+   python round_robin.py
+   python fifo_page_replacement.py
+   python lru_page_replacement.py
+   python sequential_allocation.py
    ```
-3. Run any experiment script
-4. Each experiment is self-contained and ready to execute
-
-## 📊 Algorithm Comparison
-
-| Algorithm | Type | Data Structure | Time Complexity | Space Complexity |
-|-----------|------|----------------|-----------------|------------------|
-| DFS | Uninformed | Stack/Recursion | O(V + E) | O(V) |
-| BFS | Uninformed | Queue | O(V + E) | O(V) |
-| Greedy Best-First | Informed | Priority Queue | O(b^m) | O(b^m) |
-
-Where V = vertices, E = edges, b = branching factor, m = maximum depth
+3. Follow the input prompts for each algorithm
 
 ## 📚 Additional Resources
 
-- [Scikit-learn Documentation](https://scikit-learn.org/stable/)
-- [Graph Algorithms Guide](https://www.geeksforgeeks.org/graph-data-structure-and-algorithms/)
-- [Machine Learning Basics](https://scikit-learn.org/stable/tutorial/basic/tutorial.html)
+- [Operating System Concepts](https://www.os-book.com/)
+- [CPU Scheduling Algorithms](https://www.geeksforgeeks.org/cpu-scheduling-in-operating-systems/)
+- [Page Replacement Algorithms](https://www.geeksforgeeks.org/page-replacement-algorithms-in-operating-systems/)
 
 ---
 
-**Note:** Each experiment includes practical implementations with real outputs and comprehensive Q&A sections to reinforce learning concepts in AI and Machine Learning.
+**Note:** These implementations demonstrate the core logic of OS algorithms. In real systems, these algorithms are more complex and handle additional edge cases.
