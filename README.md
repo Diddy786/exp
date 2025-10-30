@@ -1,15 +1,4 @@
-# Operating Systems Algorithms
 
-This repository contains implementations of fundamental Operating Systems algorithms in Python. Each algorithm demonstrates core concepts in process scheduling, memory management, and file allocation.
-
-## 📋 Requirements
-
-- **Python 3.x**
-- No additional libraries required (uses built-in Python functions)
-
-## 🔧 Algorithms Overview
-
-### 📊 CPU Scheduling Algorithms
 
 #### 1. First Come First Serve (FCFS) Scheduling
 
